@@ -107,10 +107,11 @@
         </div>
       </div>
       <div class="follow">
-        <div class="card" >
+        <div class="card conversation" >
           <h4 style="padding: 20px 0px 10px 30px">
             Conversation: {{ list_conversation.length }}
           </h4>
+          <b-form-input placeholder="Search"></b-form-input>
           <div>
             <ul
               v-for="cvs in list_conversation "
@@ -145,6 +146,7 @@
 import Dashboard from "../layout/Dashboard.vue";
 import { addDoc, collection, getFirestore, getDocs } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
+import { MakeToast } from '@/toast/toastMessage';
 import {
   getStorage,
   ref,
@@ -193,9 +195,11 @@ export default {
     async handlePost() {
       const db = getFirestore();
       if (this.post.title.length > 0 && this.post.content.length > 0 && this.post.hashtag.length >0) {
-        alert("Post Successfull");
-        this.isShowModalPost = false;
-
+        MakeToast({
+						variant: 'success',
+						title: 'Success',
+						content: 'Post Successfully'
+					});
         const docRef = await addDoc(collection(db, "post"), {
           hashtag: this.post.hashtag,
           title: this.post.title,
@@ -211,8 +215,13 @@ export default {
         };
         console.log(docRef, "77");
         this.getPost();
+        this.isShowModalPost = false;
       } else {
-        alert("error");
+        MakeToast({
+						variant: 'warning',
+						title: 'Warning',
+						content: 'You must enter a valid value'
+					});
       }
     },
     async getPost() {
@@ -324,6 +333,12 @@ export default {
 .post .card{
   height: 250px;
   overflow: hidden;
+}
+.conversation input {
+  margin-left: 10px;
+  width: 280px;
+  height: 40px;
+  border-radius: 20px;
 }
 .post .title {
   margin-top: 20px;

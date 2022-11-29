@@ -5,7 +5,9 @@
         ><router-link to="/home"><h2>Social</h2></router-link></b-navbar-brand
       >
       <b-nav-form>
-        <b-form-input placeholder="Search"></b-form-input>
+        <b-form-input placeholder="Search" v-model="keySearch"
+							@keyup.enter="handleSearch()"
+							type="text"></b-form-input>
       </b-nav-form>
       <!-- <b-navbar-brand href="#" class="chat"
         ><router-link to="/chat"><i class="fas fa-envelope"></i></router-link></b-navbar-brand
@@ -29,6 +31,8 @@
 </template>
 <script>
 import { getAuth, signOut } from "firebase/auth";
+import { MakeToast } from '@/toast/toastMessage';
+import { collection, getFirestore, getDocs } from "firebase/firestore";
 // const auth = getAuth();
 export default {
   name: "DashboardPage",
@@ -47,12 +51,37 @@ export default {
       signOut(auth)
         .then(() => {
           this.$router.replace("/");
+          MakeToast({
+						variant: 'success',
+						title: 'Success',
+						content: 'Logout Successfully'
+					});
           // Sign-out successful.
         })
         .catch((error) => {
+          MakeToast({
+						variant: 'error',
+						title: 'error',
+						content: error
+					});
           console.log(error);
           // An error happened.
         });
+    },
+    async getPost() {
+      this.list_post = [];
+      const db = getFirestore();
+      const querySnapshot = await getDocs(collection(db, "post"));
+      querySnapshot.forEach((doc) => {
+        this.list_post.push({
+          key: doc.id,
+          hashtag:doc.data().hashtag,
+          title: doc.data().title,
+          content: doc.data().content,
+          user: doc.data().user,
+          image: doc.data().image,
+        });
+      });
     },
     async getUser() {
       this.user = JSON.parse(localStorage.getItem("user"));

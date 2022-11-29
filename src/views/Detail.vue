@@ -13,17 +13,26 @@
               />
               <h5>{{ detail_post.user }}</h5>
             </div>
-            <div
-              class="message"
-              v-if="detail_post.user != fullname"
-              v-on:click="handleConversation"
-            >
-              <i class="far fa-comment"></i>
+            <div class="action" v-if="detail_post.user != fullname">
+              <div class="follow" @click="follow = !follow">
+                <b-button v-if="follow" @click="handleFollow">Follow</b-button>
+                <div v-else class="following" @click="handleUnFollow">
+                  <b-button>Following </b-button>
+                  <b-button class="unfollow">Unfollow</b-button>
+                </div>
+              </div>
+              <div class="message" v-on:click="handleConversation">
+                <i class="far fa-comment"></i>
+              </div>
             </div>
             <div v-else class="options">
               <b-nav-item-dropdown>
-                <b-dropdown-item href="#" v-b-modal.modal-ideas>Edit</b-dropdown-item>
-                <b-dropdown-item href="#">Delete</b-dropdown-item>
+                <b-dropdown-item href="#" v-b-modal.modal-ideas
+                  >Edit</b-dropdown-item
+                >
+                <b-dropdown-item href="#" @click="deletePost"
+                  >Delete</b-dropdown-item
+                >
               </b-nav-item-dropdown>
             </div>
             <div class="hashtag">
@@ -38,61 +47,60 @@
             <div class="content">
               <p>{{ detail_post.content }}</p>
             </div>
-            
           </div>
           <b-modal
-          v-model="isShowModalPost"
-          id="modal-ideas"
-          title="Edit"
-          size="lg"
-        >
-          <div class="row mt-2">
-            <div class="col-md-12 col-sm-12 col-lg-12">
-              <b-avatar
-                variant="info"
-                src="https://placekitten.com/300/300"
-                class="mr-3"
-              />
-              <label for="">{{ fullname }}</label>
-              <div style="margin-top: 20px">
-                <h6>Hashtag</h6>
-                <b-input placeholder="Hashtag" v-model="post.hashtag" />
-              </div>
-              <div style="margin-top: 20px">
-                <h6>Title</h6>
-                <b-input placeholder="Title post" v-model="post.title" />
-              </div>
+            v-model="isShowModal"
+            id="modal-ideas"
+            title="Edit"
+            size="lg"
+          >
+            <div class="row mt-2">
+              <div class="col-md-12 col-sm-12 col-lg-12">
+                <b-avatar
+                  variant="info"
+                  src="https://placekitten.com/300/300"
+                  class="mr-3"
+                />
+                <label for="">{{ fullname }}</label>
+                <div style="margin-top: 20px">
+                  <h6>Hashtag</h6>
+                  <b-input placeholder="Hashtag" v-model="post.hashtag" />
+                </div>
+                <div style="margin-top: 20px">
+                  <h6>Title</h6>
+                  <b-input placeholder="Title post" v-model="post.title" />
+                </div>
 
-              <div style="margin-top: 20px">
-                <h6>Content</h6>
-                <b-form-textarea v-model="post.content" rows="8" />
+                <div style="margin-top: 20px">
+                  <h6>Content</h6>
+                  <b-form-textarea v-model="post.content" rows="8" />
+                </div>
+              </div>
+              <div class="col-md-12 col-sm-12 col-lg-12 mt-3">
+                <b-form-file
+                  accept="image/*"
+                  id="upload-ideas"
+                  v-model="post.image"
+                  @change="uploadImage"
+                ></b-form-file>
               </div>
             </div>
-            <div class="col-md-12 col-sm-12 col-lg-12 mt-3">
-              <b-form-file
-                accept="image/*"
-                id="upload-ideas"
-                v-model="post.image"
-                @change="uploadImage"
-              ></b-form-file>
-            </div>
-          </div>
 
-          <template #modal-footer>
-            <div>
-              <b-button class="btn btn-danger" @click="isShowModalPost = false">
-                Cancel
-              </b-button>
-              <b-button
-                type="submit"
-                class="btn btn-primary"
-                @click="handleEdit()"
-              >
-                Edit
-              </b-button>
-            </div>
-          </template>
-        </b-modal>
+            <template #modal-footer>
+              <div>
+                <b-button class="btn btn-danger" @click="isShowModal = false">
+                  Cancel
+                </b-button>
+                <b-button
+                  type="submit"
+                  class="btn btn-primary"
+                  @click="handleEdit()"
+                >
+                  Edit
+                </b-button>
+              </div>
+            </template>
+          </b-modal>
           <hr />
           <div class="interactive">
             <div class="icon" @click="status = !status">
@@ -106,10 +114,13 @@
             <p v-b-modal.modal-center>{{ like_post.length }} lượt thích</p>
           </div>
 
-          <div>
-          </div>
+          <div></div>
           <b-modal id="modal-center" centered title="Lượt thích" hide-footer>
-            <div class="row mt-2" v-for="(like,index) in list_like" :key="index">
+            <div
+              class="row mt-2"
+              v-for="(like, index) in list_like"
+              :key="index"
+            >
               <div class="col-md-12 col-sm-12 col-lg-12">
                 <b-avatar
                   variant="info"
@@ -153,11 +164,12 @@
           </div>
         </div>
       </div>
-      <div class="follow">
+      <div class="conversation">
         <div class="card">
           <h4 style="padding: 20px 0px 10px 30px">
             Conversation: {{ list_conversation.length }}
           </h4>
+          <b-form-input placeholder="Search"></b-form-input>
           <div>
             <ul
               v-for="cvs in list_conversation"
@@ -203,8 +215,10 @@ import {
   addDoc,
   getDocs,
   deleteDoc,
+  updateDoc,
 } from "firebase/firestore";
 import { getDatabase, ref, push, onValue } from "firebase/database";
+import { MakeToast } from "@/toast/toastMessage";
 import { getAuth } from "firebase/auth";
 export default {
   name: "HomeView",
@@ -216,6 +230,7 @@ export default {
       fullname: "",
       id: "",
       post: {
+        hashtag: "",
         title: "",
         content: "",
         image: "",
@@ -231,7 +246,9 @@ export default {
       list_conversation: [],
       user_follow: [],
       list_like: [],
-      like_post:[]
+      like_post: [],
+      follow: true,
+      idFollow: null
     };
   },
   created() {
@@ -242,17 +259,18 @@ export default {
     const user = getAuth().currentUser;
     this.fullname = user.displayName;
     // const idd = this.detail_post.uid
-    
   },
   methods: {
     sendComment() {
       console.log(this.fullname, "qwewqewqe");
       const db = getDatabase();
-      push(ref(db, "comment"), {
-        username: this.fullname,
-        comment: this.comment,
-        postID: this.id,
-      });
+      if (this.comment.length > 0) {
+        push(ref(db, "comment"), {
+          username: this.fullname,
+          comment: this.comment,
+          postID: this.id,
+        });
+      }
       this.comment = "";
     },
     getComment() {
@@ -287,6 +305,7 @@ export default {
         this.detail_post = docSnap.data();
         this.id = docSnap.id;
         console.log(this.detail_post, "23");
+        this.post = this.detail_post;
       } else {
         // doc.data() will be undefined in this case
         console.log("No such document!");
@@ -296,22 +315,6 @@ export default {
       console.log(id, "12");
       this.$router.push(`/chat/${id}`);
     },
-    // async handleMessage(uid) {
-    //   const db = getFirestore();
-    //   try {
-    //         const docRef = await addDoc(collection(db, "conversation"), {
-    //           toUserId: this.detail_post.uid,
-    //           toUserName: this.detail_post.user,
-    //           currentUserId: getAuth().currentUser.uid,
-    //           currentUserName: this.fullname
-    //         });
-    //         console.log("Document written with ID: ", docRef.id);
-    //       } catch (e) {
-    //         console.error("Error adding document: ", e);
-    //       }
-    //   this.$router.push(`/chat`);
-    //   console.log(uid, "8");
-    // },
     async handleConversation() {
       const db = getFirestore();
       try {
@@ -354,17 +357,96 @@ export default {
           currentUserId: doc.data().currentUserId,
           postId: doc.data().postID,
           status: doc.data().status,
-        });   
+        });
       });
       let filterPostLike = this.list_like.filter(
-      (item) => item.postId === this.$route.params.key
-    );
-    this.like_post = filterPostLike;
+        (item) => item.postId === this.$route.params.key
+      );
+      this.like_post = filterPostLike;
     },
     async handleUnLike() {
       const db = getFirestore();
       await deleteDoc(doc(db, "like", this.ids));
       this.getLike();
+    },
+    async handleFollow() {
+      const db = getFirestore();
+      try {
+        const docRef = await addDoc(collection(db, "follow"), {
+          currentUser: this.fullname,
+          currentUserId: getAuth().currentUser.uid,
+          status: this.follow,
+          userFollow: this.detail_post.user
+        });
+        this.idFollow = docRef.id
+        console.log("Document written with ID: ", docRef.id);
+      } catch (e) {
+        console.error("Error adding document: ", e);
+      }
+    },
+    async handleUnFollow() {
+      const db = getFirestore();
+      await deleteDoc(doc(db, "follow", this.idFollow));
+    },
+    async deletePost() {
+      const db = getFirestore();
+      this.$bvModal
+        .msgBoxConfirm("Do you want to delete this post?", {
+          title: "Warning",
+          size: "sm",
+          buttonSize: "sm",
+          okVariant: "danger",
+          okTitle: "OK",
+          cancelTitle: "Cancel",
+          footerClass: "p-2",
+          hideHeaderClose: false,
+          centered: true,
+        })
+        .then(async (value) => {
+          if (value === true) {
+            await deleteDoc(doc(db, "post", this.id));
+            MakeToast({
+              variant: "success",
+              title: "Success",
+              content: "Successfully to delete this post",
+            });
+            this.$router.replace("/home");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          {
+            MakeToast({
+              variant: "warning",
+              title: "Warning",
+              content: "You can not delete this post",
+            });
+          }
+        });
+    },
+    async handleEdit() {
+      const db = getFirestore();
+      const postRef = doc(db, "post", this.$route.params.key);
+      if (
+        this.post.hashtag.length > 0 &&
+        this.post.title.length > 0 &&
+        this.post.content.length > 0
+      ) {
+        await updateDoc(postRef, this.post);
+        MakeToast({
+          variant: "success",
+          title: "Success",
+          content: "Successfully to update this post",
+        });
+        this.getDetailPost();
+        this.isShowModal = false;
+      } else {
+        MakeToast({
+          variant: "danger",
+          title: "Danger",
+          content: "You must enter a valid value",
+        });
+      }
     },
   },
 };
@@ -381,11 +463,38 @@ export default {
   padding: 100px 20px 0px 250px;
   height: 100%;
 }
-.follow {
+.conversation {
   margin-left: 30px;
 }
-.follow .card {
+.conversation .card {
   width: 300px !important;
+}
+.conversation input {
+  margin-left: 10px;
+  width: 280px;
+  height: 40px;
+  border-radius: 20px;
+}
+.following {
+  position: relative;
+  overflow: hidden;
+}
+.following .unfollow {
+  background: red !important;
+  position: absolute;
+  left: 0px;
+  width: 92px !important;
+  top: -50px;
+}
+.follow{
+  height: 45px !important;
+}
+.following:hover .unfollow {
+  background: white !important;
+  top: -2px;
+  color: red !important;
+  font-weight: 600;
+  border: 1px solid red !important;
 }
 .post a {
   text-decoration: none;
@@ -400,13 +509,22 @@ export default {
 .post .title {
   margin-top: 20px;
 }
-.message {
+.action {
   list-style: none;
-  float: right;
-  margin-top: -50px;
+  display: flex;
   color: black;
   cursor: pointer;
   font-size: 25px;
+  justify-content: space-between;
+  margin-top: -50px;
+}
+
+.action .follow button {
+  margin-left: 150px;
+  background: #0084ff;
+  border: none;
+  border-radius: 50px ;
+  margin-top: 10px;
 }
 .options {
   list-style: none;

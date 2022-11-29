@@ -4,7 +4,6 @@
     <div class="sidebar-wrapper">
       <div class="sidebar-nav">
         <h3>Chat</h3>
-        <b-form-input placeholder="Search"></b-form-input>
         <div>
           <ul>
             <li v-if="detail_conversation.currentUser === name.displayName">
@@ -114,13 +113,15 @@ export default {
   methods: {
     sendMessage() {
       const db = getDatabase();
-      push(ref(db, "messages"), {
+      if(this.message.length >0){
+        push(ref(db, "messages"), {
         userSender: this.name.displayName,
         toUser: this.detail_conversation.withUser,
         content:this.message,
         conversation_id: this.$route.params.id
       });
       this.message = "";
+      }
     },
     getMessage() {
       const db = getDatabase();

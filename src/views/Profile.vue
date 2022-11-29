@@ -10,8 +10,40 @@
         />
         <h5>{{ fullname }}</h5>
         <p>{{ user_post.length }} bài viết</p>
+        <div class="follow">
+          <p v-b-modal.modal-center>{{following.length}} Following</p>
+          <p v-b-modal.modal-center>{{follower.length}} Followers</p>
+        </div>
       </div>
     </div>
+    <b-modal id="modal-center" centered title="List follow" hide-footer>
+      <b-tabs content-class="mt-3" align="center" style="margin-top:-16px">
+        <b-tab title="Following" active>
+          <div v-for="(flw, index) in list_follow.filter((flw) => flw.currentUser === this.fullname)" :key="index">
+            <div class="following">
+                  <b-avatar
+                    variant="info"
+                    src="https://placekitten.com/300/300"
+                    class="mr-3"
+                  />
+                  <h5>{{ flw.userFollow }}</h5>
+                </div>
+          </div>
+        </b-tab>
+        <b-tab title="Followers">
+          <div v-for="(flw, index) in list_follow.filter((flw) => flw.currentUser != this.fullname && flw.userFollow === this.fullname)" :key="index">
+            <div class="following">
+                  <b-avatar
+                    variant="info"
+                    src="https://placekitten.com/300/300"
+                    class="mr-3"
+                  />
+                  <h5>{{ flw.currentUser }}</h5>
+                </div>
+          </div>
+        </b-tab>
+      </b-tabs>
+          </b-modal>
 
     <div class="user_post">
       <b-tabs content-class="mt-3" align="center">
@@ -72,10 +104,14 @@ export default {
     return {
       list_post: [],
       user_post: [],
+      list_follow:[],
       album: "album",
+      following:[],
+      follower:[]
     };
   },
   async created() {
+    this.getFollow()
     const user = getAuth().currentUser;
     this.fullname = user.displayName;
 
@@ -95,6 +131,30 @@ export default {
     );
     this.user_post = filterPost;
   },
+  methods:{
+    async getFollow() {
+      this.list_follow = [];
+      const db = getFirestore();
+      const querySnapshot = await getDocs(collection(db, "follow"));
+      querySnapshot.forEach((doc) => {
+        this.list_follow.push({
+          id: doc.id,
+          currentUser: doc.data().currentUser,
+          currentUserId: doc.data().currentUserId,
+          userFollow: doc.data().userFollow,
+          status: doc.data().status,
+        });
+      });
+      let filterFollowing = this.list_follow.filter(
+        (item) => item.currentUser === this.fullname
+      );
+      this.following = filterFollowing;
+      let filterFollower = this.list_follow.filter(
+        (item) => item.userFollow === this.fullname
+      );
+      this.follower = filterFollower;
+    },
+  }
 };
 </script>
 
@@ -103,14 +163,28 @@ export default {
   display: flex;
 }
 .card {
-  margin: 20px 250px 0px 50px;
+  margin: 20px 250px 0px 250px;
+}
+.follow{
+  display: flex;
+  justify-content: center;
+}
+.follow p:nth-child(2){
+  margin-left: 50px;
+}
+.following{
+  display: flex;
+  margin-bottom: 20px;
+}
+.following h5{
+  margin-top: 5px;
 }
 .zone-button-submit {
   text-align: center;
 }
 .zone-profile {
   padding-top: 100px;
-  height: 300px;
+  height: 320px;
   width: 100%;
   background-color: #eeeeee;
   text-align: center;
@@ -123,7 +197,7 @@ export default {
   margin-bottom: 10px;
 }
 .user_post {
-  padding-top: 300px;
+  padding-top: 320px;
 }
 .user_post ul {
   padding-left: 250px !important;

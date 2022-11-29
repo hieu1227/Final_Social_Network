@@ -7,11 +7,12 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import '@/assets/font-awesome/css/all.min.css';
 
+Vue.use(BootstrapVue);
+Vue.use(IconsPlugin);
+
 // import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
-// import "firebase/performance";
-// import "firebase/messaging";
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getStorage } from "firebase/storage";
@@ -44,8 +45,6 @@ export default {
   //   messaging: firebase.messaging.isSupported() ? firebase.messaging() : null,
 };
 
-Vue.use(BootstrapVue);
-Vue.use(IconsPlugin);
 
 Vue.config.productionTip = false
 

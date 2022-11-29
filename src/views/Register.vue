@@ -95,6 +95,7 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { collection, addDoc, getFirestore } from "firebase/firestore";
+import { MakeToast } from '@/toast/toastMessage';
 export default {
   name: "RegisterPage",
   data() {
@@ -112,7 +113,7 @@ export default {
     async register() {
       const db = getFirestore();
       const auth = getAuth();
-      const user = auth.currentUser;
+      // const user = auth.currentUser;
       createUserWithEmailAndPassword(
         auth,
         this.email,
@@ -120,7 +121,11 @@ export default {
         this.fullname
       ).then(
         async (res) => {
-          alert("Register Successfully");
+          MakeToast({
+						variant: 'success',
+						title: 'Success',
+						content: 'Register Successfully'
+					});
           console.log(res);
           updateProfile(auth.currentUser, { displayName: this.fullname });
           try {
@@ -131,15 +136,19 @@ export default {
             });
             console.log("Document written with ID: ", docRef.id);
           } catch (e) {
-            console.error("Error adding document: ", e);
+            console.log("Error adding document: ", e);
           }
-          console.log(user, "213");
         },
         (err) => {
           const errorMessage = err.message;
           const errorCode = err.code;
           console.log(errorMessage);
-          console.log(errorCode);
+          console.log(errorCode,'1232132');
+          MakeToast({
+						variant: 'warning',
+						title: 'Warning',
+						content: errorMessage
+					});
         }
       );
     },

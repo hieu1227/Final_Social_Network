@@ -84,6 +84,7 @@
 
 <script>
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { MakeToast } from '@/toast/toastMessage';
 export default {
   name: "LoginPage",
   data() {
@@ -98,7 +99,11 @@ export default {
       const auth = getAuth();
       signInWithEmailAndPassword(auth, this.email, this.password).then(
         async (userCre) => {
-          alert("Login Successfull");
+          MakeToast({
+						variant: 'success',
+						title: 'Success',
+						content: 'Login Successfully'
+					});
           localStorage.setItem("user", JSON.stringify(userCre.user));
           this.$router.replace("/home");
         },
@@ -107,7 +112,12 @@ export default {
           const errorCode = err.code;
           console.log(errorMessage);
           console.log(errorCode);
-          alert("Error: " + errorCode);
+          MakeToast({
+						variant: 'danger',
+						title: 'Danger',
+						content: errorCode
+					});
+          // alert("Error: " + errorCode);
         }
       );
     },
