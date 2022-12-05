@@ -167,21 +167,16 @@
       <div class="conversation">
         <div class="card">
           <h4 style="padding: 20px 0px 10px 30px">
-            Conversation: {{ list_conversation.length }}
+            Conversation: {{ filter.length }}
           </h4>
-          <b-form-input placeholder="Search"></b-form-input>
+          <b-form-input placeholder="Search" v-model="searchConversation"></b-form-input>
           <div>
             <ul
-              v-for="cvs in list_conversation"
+              v-for="cvs in filterConversation"
               :key="cvs"
               @click="handleMessage(cvs.id)"
             >
-              <li
-                v-if="
-                  cvs.currentUser != fullname.displayName ||
-                  cvs.withUser === fullname.displayName
-                "
-              >
+              <li v-if="cvs.currentUser === fullname">
                 <b-avatar
                   variant="info"
                   src="https://placekitten.com/300/300"
@@ -189,7 +184,7 @@
                 />
                 {{ cvs.withUser }}
               </li>
-              <li v-if="cvs.withUser === fullname.displayName">
+              <li v-else-if="(cvs.withUser === fullname)">
                 <b-avatar
                   variant="info"
                   src="https://placekitten.com/300/300"
@@ -197,6 +192,7 @@
                 />
                 {{ cvs.currentUser }}
               </li>
+              <li v-else></li>
             </ul>
           </div>
         </div>
@@ -227,6 +223,7 @@ export default {
   },
   data() {
     return {
+      searchConversation:'',
       fullname: "",
       id: "",
       post: {
@@ -259,6 +256,14 @@ export default {
     const user = getAuth().currentUser;
     this.fullname = user.displayName;
     // const idd = this.detail_post.uid
+  },
+  computed:{
+    filterConversation(){
+      return this.list_conversation.filter(cvs => (cvs.withUser || cvs.currentUser).toLowerCase().includes(this.searchConversation.toLowerCase()))
+    },
+    filter(){
+      return this.list_conversation.filter(cvs => (cvs.currentUser === this.fullname || cvs.withUser === this.fullname))
+    }
   },
   methods: {
     sendComment() {

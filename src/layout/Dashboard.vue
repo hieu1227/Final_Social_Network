@@ -39,6 +39,7 @@ export default {
   components: {},
   data() {
     return {
+      keySearch:'',
       user: {},
     };
   },
