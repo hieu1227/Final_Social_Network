@@ -1,32 +1,35 @@
 <template>
   <div class="home">
     <div id="navbar">
-    <b-navbar toggleable>
-      <b-navbar-brand href="#"
-        ><router-link to="/home"><h2>Social</h2></router-link></b-navbar-brand
-      >
-      <b-nav-form>
-        <b-form-input placeholder="Search" v-model="keySearch"
-							@keyup.enter="handleSearch()"
-							type="text"></b-form-input>
-      </b-nav-form>
-      <!-- <b-navbar-brand href="#" class="chat"
+      <b-navbar toggleable>
+        <b-navbar-brand href="#"
+          ><router-link to="/home"><h2>Social</h2></router-link></b-navbar-brand
+        >
+        <b-nav-form>
+          <b-form-input
+            placeholder="Search"
+            v-model="keySearch"
+            @keyup.enter="handleSearch()"
+            type="text"
+          ></b-form-input>
+        </b-nav-form>
+        <!-- <b-navbar-brand href="#" class="chat"
         ><router-link to="/chat"><i class="fas fa-envelope"></i></router-link></b-navbar-brand
       > -->
-      <b-nav-item-dropdown>
-        <template #button-content>
-          <span>{{ user.displayName || "Khoong cos" }}</span>
-        </template>
-        <b-dropdown-item href="#"
-          ><router-link to="/profile">Profile</router-link></b-dropdown-item
-        >
-        <b-dropdown-item href="#"
-          ><router-link to="/setting">Settings</router-link></b-dropdown-item
-        >
-        <b-dropdown-item href="#" @click="SignOut">Sign Out</b-dropdown-item>
-      </b-nav-item-dropdown>
-    </b-navbar>
-  </div>
+        <b-nav-item-dropdown>
+          <template #button-content>
+            <span>{{ user.displayName || "Khoong cos" }}</span>
+          </template>
+          <b-dropdown-item href="#"
+            ><router-link to="/profile">Profile</router-link></b-dropdown-item
+          >
+          <b-dropdown-item href="#"
+            ><router-link to="/setting">Settings</router-link></b-dropdown-item
+          >
+          <b-dropdown-item href="#" @click="SignOut">Sign Out</b-dropdown-item>
+        </b-nav-item-dropdown>
+      </b-navbar>
+    </div>
     <div class="main">
       <div class="manage-ideas__content-post col-12 col-sm-12 col-md-12">
         <div class="card">
@@ -156,7 +159,7 @@
                 />
                 {{ cvs.withUser }}
               </li>
-              <li v-else-if="(cvs.withUser === fullname.displayName)">
+              <li v-else-if="cvs.withUser === fullname.displayName">
                 <b-avatar
                   variant="info"
                   src="https://placekitten.com/300/300"
@@ -176,7 +179,7 @@
 <script>
 // import Dashboard from "../layout/Dashboard.vue";
 import { addDoc, collection, getFirestore, getDocs } from "firebase/firestore";
-import { getAuth,signOut } from "firebase/auth";
+import { getAuth, signOut } from "firebase/auth";
 import { MakeToast } from "@/toast/toastMessage";
 import {
   getStorage,
@@ -191,8 +194,8 @@ export default {
   // },
   data() {
     return {
-      searchConversation:'',
-      keySearch:'',
+      searchConversation: "",
+      keySearch: "",
       fullname: {},
       id: "",
       post: {
@@ -215,19 +218,31 @@ export default {
     this.getPost();
     this.handleCreated();
     this.getConversation();
-    this.getUser()
+    this.getUser();
+    console.log(this.fullname,'231');
   },
-  computed:{
-    filterConversation(){
-      return this.list_conversation.filter(cvs => (cvs.withUser || cvs.currentUser).toLowerCase().includes(this.searchConversation.toLowerCase()))
+  computed: {
+    filterConversation() {
+      return this.list_conversation.filter((cvs) =>
+        (cvs.withUser || cvs.currentUser)
+          .toLowerCase()
+          .includes(this.searchConversation.toLowerCase())
+      );
     },
-    filterPost(){
-      return this.list_post.filter(post => (post.hashtag && post.title).toLowerCase().includes(this.keySearch.toLowerCase()))
+    filterPost() {
+      return this.list_post.filter((post) =>
+        (post.hashtag && post.title)
+          .toLowerCase()
+          .includes(this.keySearch.toLowerCase())
+      );
     },
-    filter(){
-      return this.list_conversation.filter(cvs => (cvs.currentUser === this.fullname.displayName || cvs.withUser === this.fullname.displayName))
-    }
-    
+    filter() {
+      return this.list_conversation.filter(
+        (cvs) =>
+          cvs.currentUser === this.fullname.displayName ||
+          cvs.withUser === this.fullname.displayName
+      );
+    },
   },
   // mounted(){
   //   this.getPost()
@@ -363,18 +378,18 @@ export default {
         .then(() => {
           this.$router.replace("/");
           MakeToast({
-						variant: 'success',
-						title: 'Success',
-						content: 'Logout Successfully'
-					});
+            variant: "success",
+            title: "Success",
+            content: "Logout Successfully",
+          });
           // Sign-out successful.
         })
         .catch((error) => {
           MakeToast({
-						variant: 'error',
-						title: 'error',
-						content: error
-					});
+            variant: "error",
+            title: "error",
+            content: error,
+          });
           console.log(error);
           // An error happened.
         });

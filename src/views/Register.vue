@@ -121,11 +121,6 @@ export default {
         this.fullname
       ).then(
         async (res) => {
-          MakeToast({
-						variant: 'success',
-						title: 'Success',
-						content: 'Register Successfully'
-					});
           console.log(res);
           updateProfile(auth.currentUser, { displayName: this.fullname });
           try {
@@ -134,6 +129,11 @@ export default {
               email: this.email,
               id: getAuth().currentUser.uid,
             });
+            MakeToast({
+						variant: 'success',
+						title: 'Success',
+						content: 'Register Successfully'
+					});
             console.log("Document written with ID: ", docRef.id);
           } catch (e) {
             console.log("Error adding document: ", e);
@@ -143,7 +143,7 @@ export default {
           const errorMessage = err.message;
           const errorCode = err.code;
           console.log(errorMessage);
-          console.log(errorCode,'1232132');
+          console.log(errorCode);
           MakeToast({
 						variant: 'warning',
 						title: 'Warning',

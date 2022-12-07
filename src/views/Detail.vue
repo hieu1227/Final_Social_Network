@@ -81,7 +81,7 @@
                   accept="image/*"
                   id="upload-ideas"
                   v-model="post.image"
-                  @change="uploadImage"
+                  
                 ></b-form-file>
               </div>
             </div>
@@ -169,7 +169,10 @@
           <h4 style="padding: 20px 0px 10px 30px">
             Conversation: {{ filter.length }}
           </h4>
-          <b-form-input placeholder="Search" v-model="searchConversation"></b-form-input>
+          <b-form-input
+            placeholder="Search"
+            v-model="searchConversation"
+          ></b-form-input>
           <div>
             <ul
               v-for="cvs in filterConversation"
@@ -184,7 +187,7 @@
                 />
                 {{ cvs.withUser }}
               </li>
-              <li v-else-if="(cvs.withUser === fullname)">
+              <li v-else-if="cvs.withUser === fullname">
                 <b-avatar
                   variant="info"
                   src="https://placekitten.com/300/300"
@@ -223,7 +226,7 @@ export default {
   },
   data() {
     return {
-      searchConversation:'',
+      searchConversation: "",
       fullname: "",
       id: "",
       post: {
@@ -245,7 +248,7 @@ export default {
       list_like: [],
       like_post: [],
       follow: true,
-      idFollow: null
+      idFollow: null,
     };
   },
   created() {
@@ -257,13 +260,20 @@ export default {
     this.fullname = user.displayName;
     // const idd = this.detail_post.uid
   },
-  computed:{
-    filterConversation(){
-      return this.list_conversation.filter(cvs => (cvs.withUser || cvs.currentUser).toLowerCase().includes(this.searchConversation.toLowerCase()))
+  computed: {
+    filterConversation() {
+      return this.list_conversation.filter((cvs) =>
+        (cvs.withUser || cvs.currentUser)
+          .toLowerCase()
+          .includes(this.searchConversation.toLowerCase())
+      );
     },
-    filter(){
-      return this.list_conversation.filter(cvs => (cvs.currentUser === this.fullname || cvs.withUser === this.fullname))
-    }
+    filter() {
+      return this.list_conversation.filter(
+        (cvs) =>
+          cvs.currentUser === this.fullname || cvs.withUser === this.fullname
+      );
+    },
   },
   methods: {
     sendComment() {
@@ -381,9 +391,9 @@ export default {
           currentUser: this.fullname,
           currentUserId: getAuth().currentUser.uid,
           status: this.follow,
-          userFollow: this.detail_post.user
+          userFollow: this.detail_post.user,
         });
-        this.idFollow = docRef.id
+        this.idFollow = docRef.id;
         console.log("Document written with ID: ", docRef.id);
       } catch (e) {
         console.error("Error adding document: ", e);
@@ -491,7 +501,7 @@ export default {
   width: 92px !important;
   top: -50px;
 }
-.follow{
+.follow {
   height: 45px !important;
 }
 .following:hover .unfollow {
@@ -528,7 +538,7 @@ export default {
   margin-left: 150px;
   background: #0084ff;
   border: none;
-  border-radius: 50px ;
+  border-radius: 50px;
   margin-top: 10px;
 }
 .options {
