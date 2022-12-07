@@ -5,7 +5,7 @@
       <div class="post">
         <div class="card">
           <div class="card-body area-post">
-            <div class="card-name">
+            <div class="card-name" @click="userDetail(detail_post.uid)">
               <b-avatar
                 variant="info"
                 src="https://placekitten.com/300/300"
@@ -81,7 +81,6 @@
                   accept="image/*"
                   id="upload-ideas"
                   v-model="post.image"
-                  
                 ></b-form-file>
               </div>
             </div>
@@ -150,7 +149,7 @@
             v-for="cmt in comments.filter((cmt) => cmt.postID === this.id)"
             :key="cmt"
           >
-            <div class="card-name">
+            <div class="card-name" @click="userDetail(cmt.uid)">
               <b-avatar
                 variant="info"
                 src="https://placekitten.com/300/300"
@@ -258,6 +257,7 @@ export default {
     this.getLike();
     const user = getAuth().currentUser;
     this.fullname = user.displayName;
+    console.log(user);
     // const idd = this.detail_post.uid
   },
   computed: {
@@ -284,6 +284,7 @@ export default {
           username: this.fullname,
           comment: this.comment,
           postID: this.id,
+          uid: getAuth().currentUser.uid,
         });
       }
       this.comment = "";
@@ -295,7 +296,7 @@ export default {
         data.forEach((data) => {
           this.comments.push(data.val());
         });
-        console.log();
+        console.log(this.comments, "123");
       });
     },
     async getConversation() {
@@ -463,6 +464,9 @@ export default {
         });
       }
     },
+    userDetail(uid) {
+      this.$router.push(`/user/${uid}`);
+    },
   },
 };
 </script>
@@ -517,6 +521,7 @@ export default {
 }
 .card-name {
   display: flex;
+  cursor: pointer;
 }
 .card-name input {
   border-radius: 50px;
@@ -532,10 +537,11 @@ export default {
   font-size: 25px;
   justify-content: space-between;
   margin-top: -50px;
+  margin-left: 120px;
 }
 
 .action .follow button {
-  margin-left: 150px;
+  margin-left: 50px;
   background: #0084ff;
   border: none;
   border-radius: 50px;
