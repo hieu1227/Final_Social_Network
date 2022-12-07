@@ -88,7 +88,6 @@ export default {
     };
   },
   created() {
-    this.getDetailUser();
     // const user = getAuth().currentUser;
     this.user = JSON.parse(localStorage.getItem("user"));
     // this.user = user;
