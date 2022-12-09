@@ -9,7 +9,7 @@
           class="mr-3"
         />
         <h5>{{ fullname }}</h5>
-        <p>{{ user_post.length }} bài viết</p>
+        <p>{{ user_post.length }} Posts</p>
         <div class="follow">
           <p v-b-modal.modal-center>{{following.length}} Following</p>
           <p v-b-modal.modal-center>{{follower.length}} Followers</p>

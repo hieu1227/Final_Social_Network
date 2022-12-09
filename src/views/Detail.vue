@@ -110,14 +110,14 @@
                 <i class="fas fa-heart"></i>
               </div>
             </div>
-            <p v-b-modal.modal-center>{{ like_post.length }} lượt thích</p>
+            <p v-b-modal.modal-center>{{ like_post.length }} Likes</p>
           </div>
 
           <div></div>
-          <b-modal id="modal-center" centered title="Lượt thích" hide-footer>
+          <b-modal id="modal-center" centered title="Likes" hide-footer>
             <div
               class="row mt-2"
-              v-for="(like, index) in list_like"
+              v-for="(like, index) in like_post"
               :key="index"
             >
               <div class="col-md-12 col-sm-12 col-lg-12">
@@ -510,7 +510,7 @@ export default {
 }
 .following:hover .unfollow {
   background: white !important;
-  top: -2px;
+  top: -3px;
   color: red !important;
   font-weight: 600;
   border: 1px solid red !important;

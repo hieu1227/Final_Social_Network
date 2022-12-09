@@ -219,7 +219,7 @@ export default {
     this.handleCreated();
     this.getConversation();
     this.getUser();
-    console.log(this.fullname,'231');
+    console.log(this.fullname, "231");
   },
   computed: {
     filterConversation() {
@@ -268,11 +268,6 @@ export default {
         this.post.content.length > 0 &&
         this.post.hashtag.length > 0
       ) {
-        MakeToast({
-          variant: "success",
-          title: "Success",
-          content: "Post Successfully",
-        });
         const docRef = await addDoc(collection(db, "post"), {
           hashtag: this.post.hashtag,
           title: this.post.title,
@@ -281,12 +276,17 @@ export default {
           user: this.fullname.displayName,
           uid: getAuth().currentUser.uid,
         });
+        MakeToast({
+          variant: "success",
+          title: "Success",
+          content: "Post Successfully",
+        });
         this.post = {
           title: "",
           content: "",
           image: "",
         };
-        console.log(docRef, "77");
+        console.log(docRef);
         this.getPost();
         this.isShowModalPost = false;
       } else {
@@ -341,7 +341,6 @@ export default {
 
       const storageRef = ref(storage, "images/" + file.name);
       const uploadTask = uploadBytesResumable(storageRef, file);
-      console.log(this.images, "999");
       uploadTask.on(
         "state_changed",
         (snapshot) => {
